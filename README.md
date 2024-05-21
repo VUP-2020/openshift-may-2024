@@ -1,4 +1,4 @@
-# openshift-may-2024
+# Openshift-may-2024
 
 ## Cloning this GitHub Repository 
 ```
