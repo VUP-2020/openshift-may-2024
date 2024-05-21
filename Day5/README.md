@@ -266,8 +266,6 @@ jegan@tektutor.org $ ~/openshift-may-2024/Day5/ingress   main ●  curl
 Greetings from Spring Boot!	
 ```
 
-
-
 ## What does Serverless mean?
 - serverless does not mean the absence of servers
 - is an architecture model for running applications in an environment that is abstracted away from the developers
@@ -323,3 +321,87 @@ Greetings from Spring Boot!
   1. Build
   2. Eventing
   3. Serving
+
+
+## Lab - Deploying a knative service
+```
+kn service create hello \
+--image ghcr.io/knative/helloworld-go:latest \
+--port 8080
+--env TARGET=World
+```
+
+Expected output
+![knative](knative1.png)
+
+Accessing the knative application
+```
+curl -k https://hello-jegan.apps.ocp4.tektutor.org.labs
+```
+
+Expected output
+![knative](knative2.png)
+
+
+Update the service
+```
+kn service update hello --env TARGET=Knative
+kn revisions list
+```
+
+Expected output
+![knative](knative3.png)
+
+Splitting the traffic between two revisions
+```
+kn service update hello --traffic hello-00001=50 --traffic @latest=50
+kn revisions list
+```
+
+Expected output
+![knative](knative4.png)
+![knative](knative5.png)
+
+Deleting the knative service
+```
+kn service list
+kn service delete hello
+kn service list
+```
+
+Expected output
+![knative](knative6.png)
+
+## Lab - Knative eventing
+
+Let's deploy a sink service
+```
+oc project jegan
+kn service create eventinghello --concurrency-target=1 --image=quay.io/rhdevelopers/eventinghello:0.0.2
+```
+
+Expected output
+![knative](knative7.png)
+
+Let's create an event source application
+```
+kn source ping create eventinhello-ping-source --schedule="*/2 * * * *" --data '{"message": "Thanks for your message"}' --sink ksvc:eventinghello
+```
+
+Expected output
+![knative](knative8.png)
+![knative](knative9.png)
+![knative](knative10.png)
+![knative](knative11.png)
+![knative](knative12.png)
+
+
+## Post-test - Kindly complete the test from RPS Lab machine
+<pre>
+https://app.mymapit.in/code4/tiny/wiSvSn
+</pre>
+ 
+## Feedback - kindly fill up your feedback here
+<pre>
+https://survey.zohopublic.com/zs/cHD3Vm
+</pre>
